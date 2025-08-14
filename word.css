@@ -47,6 +47,14 @@ body {
   border: 2px solid #4664ff;
   border-radius: 9px;
   padding: 16px 18px;
+  color: #fff;
+  text-align: center;
+  vertical-align: middle;
+  line-height: 34px;
+  font-weight: bold;
+}
+.appwords__cell.inputcell {
+  background: #453c74;
 }
 
 .keyboard {

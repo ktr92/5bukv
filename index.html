@@ -17,10 +17,10 @@
 
       <div class="appwords">
         <div class="appwords__items">
-          <div v-for="i in 6" class="appwords__row">
-            <div v-for="j in 5" class="appwords__col">
-              <div class="appwords__cell">
-                {{  }}
+          <div v-for="(i, index) in 6" :key="i" class="appwords__row">
+            <div v-for="(j, subindex) in 5" :key="`${i}${j}`" class="appwords__col">
+              <div class="appwords__cell" :class="{ 'inputcell': activeindex > subindex}">
+                {{ wordinput[subindex] }}
               </div>
             </div>
           </div>
@@ -50,11 +50,11 @@
         const word_letters = computed(() => word.split(''))
         const attempts_left = ref(attempts)
         const allowed_state = ref(allowed)
+        const activeindex = ref(0)
 
-        const state = {
-          
-        }
+        const wordinput = ref([]) 
 
+      
        
         const keys = [
           [
@@ -75,20 +75,39 @@
           ]
         ]
 
+        const checkAnswer = (word, input) => {
+          
+        }
+
+        const removeLetter = () => {
+          wordinput.value.pop()
+        }
+
         const handleKeyPress = (key) => {
           if (key.action) {
             if (key.action === 'enter') {
-              console.log('checkword')
+              checkAnswer(word_letters.value, wordinput.value)
             }
             if (key.action === 'backspace') {
-              console.log('removeword')
+              removeLetter()
+               activeindex.value += 1
+            }
+          } else {
+            if (wordinput.value.length < 5) {
+              wordinput.value.push(key.label)
+              activeindex.value += 1
             }
           }
+          console.log(activeindex.value)
+          console.log(wordinput.value)
+
         }
 
         return {
           word_letters,
           keys,
+          wordinput,
+          activeindex,
           handleKeyPress
         }
       }

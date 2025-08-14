@@ -53,8 +53,12 @@ body {
   line-height: 34px;
   font-weight: bold;
 }
-.appwords__cell.inputcell {
+.appwords__cell.activecell {
   background: #453c74;
+}
+.appwords__cell.successcell {
+  background: #4664ff;
+  color: #fff;
 }
 
 .keyboard {
@@ -74,8 +78,8 @@ body {
     gap:  0 4px;
     justify-content: center;
 }
-.key {
-
+.key {  
+  font-weight: bold;
   font-weight: 500;
   font-size: 19px;
   line-height: 140%;

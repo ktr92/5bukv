@@ -14,13 +14,21 @@
 
   <div class="appwrapper">
     <div id="app">
-
+      <div style="color: #fff; font-size: 30px; text-align: center; font-weight: bold;">{{ attempts_left }}</div>
       <div class="appwords">
         <div class="appwords__items">
-          <div v-for="(i, index) in 6" :key="i" class="appwords__row">
-            <div v-for="(j, subindex) in 5" :key="`${i}${j}`" class="appwords__col">
-              <div class="appwords__cell" :class="{ 'inputcell': activeindex > subindex}">
-                {{ wordinput[subindex] }}
+          <div v-for="(row, row_index) in 6" :key="row" class="appwords__row">
+            <div v-for="(col, col_index) in 5" :key="`${row}${col}`" class="appwords__col">
+              <div class="appwords__cell" :class="
+                  { 'activecell': isCellActive(col_index, row_index),
+                    'successcell': isCellSuccess(col_index, row_index)
+                  }">
+                <template v-if="isRowActive(row_index)">
+                  {{ wordinput[col_index] }}
+                </template>
+                <template v-if="isRowAttemp(row_index)">
+                  {{ appstate.attempts[row_index][col_index] }}
+                </template>
               </div>
             </div>
           </div>
@@ -39,7 +47,7 @@
     </div>
   </div><!-- /.appwrapper -->
   <script>
-    const { createApp, ref, computed } = Vue
+    const { createApp, ref, computed, reactive } = Vue
 
     const word = 'АФЕРА'
     const attempts = 6
@@ -50,12 +58,31 @@
         const word_letters = computed(() => word.split(''))
         const attempts_left = ref(attempts)
         const allowed_state = ref(allowed)
+        const matches = ref([])
+        let appstate = {}
+
+        // если попыток менее 6, значит сегодня уже пытался отгадать, а значит берем состояние из хранилища
+        if (attempts_left.value > 10) {
+          getState()
+        } else {
+          appstate = {
+            attempts: [], // слова из предыдущих попыток 
+            current: '', // текущее вводимое слово
+            letters_true: [], // отгаданные буквы
+            letters_false: [] // исключенные буквы
+          }
+        }
+
+
+        // индекс текущей вводимой буквы
         const activeindex = ref(0)
+        // номер попытки
+        const activeattempt = ref(0)
+        // текущее вводимое слово - массив введенных букв
+        const wordinput = ref([])
 
-        const wordinput = ref([]) 
 
-      
-       
+        // клавиатура
         const keys = [
           [
             { label: 'Й' }, { label: 'Ц' }, { label: 'У' }, { label: 'К' }, { label: 'Е' },
@@ -75,13 +102,124 @@
           ]
         ]
 
+        // загрузка текущего состояние в лок.хранилище если пользователь уже заходил сегодня
+        const getState = () => {
+          appstate = JSON.parse(localStorage.getItem('appstate'))
+          attempts_left.value = JSON.parse(localStorage.getItem('attempts_left'))
+        }
+        // сохранение текущего состояние в лок.хранилище
+        const saveState = (state) => {
+          localStorage.setItem('appstate', JSON.stringify(state))
+          localStorage.setItem('attempts_left', JSON.stringify(attempts_left.value))
+        }
+        // очистка состояние в лок.хранилище если у пользователя есть новая попытка
+        const clearState = (state) => {
+          localStorage.removeItem('appstate')
+          localStorage.removeItem('attempts_left')
+        }
+
+        // проверка на активность ячейки 
+        // слово - это номер попытки = строка, 
+        // буква - это текущий активный индекс который сбрасывается при переходе к новой попытке (все буквы меньше этого индекса активны)
+        const isCellActive = (col_index, row_index) => {
+          return activeindex.value > col_index && activeattempt.value === row_index
+        }
+
+        // провеврка есть ли в этой ячейке нужная буква
+        // сохранять предыдущие отгаданные буквы
+        const isCellSuccess = (col_index, row_index) => {
+          const cell_to_letter = appstate.letters_true[row_index] ? appstate.letters_true[row_index][col_index] : null
+
+          if (cell_to_letter && row_index === cell_to_letter.attemptnumber) {
+            return matches.value[col_index].letter === word_letters.value[col_index]
+          }
+          return false
+        }
+
+        // проверка в какой строке выводить текущее вводимое слово (текущая попытка = номер строки)
+        const isRowActive = (row_index) => {
+          return activeattempt.value === row_index
+        }
+        // проверка выводить ли в этой строке ранее введенное слово
+        const isRowAttemp = (row_index) => {
+          return activeattempt.value > row_index
+        }
+
+        const appfinish = () => {
+          // если попытки закончились и слово не отгадано
+        }
+
+        const appSuccess = () => {
+          // если слово отагадано
+        }
+
+
+
+
+        const findLetters = (word, input) => {
+          // проверяем точные попадания букв в нужном месте
+          matches.value = input.map((item, index) => {
+            // пропускаем угаданное ранее
+            if (appstate.letters_true[index]) {
+              return {
+                attemptnumber: activeattempt.value,
+                ...appstate.letters_true[index]
+              }
+            } else if (item === word[index]) {
+              return {
+                letter: item,
+                index,
+                attemptnumber: activeattempt.value
+              }
+            } 
+          })
+          appstate.letters_true.push(matches.value)
+          console.log('matches: ', matches.value)
+          return false
+        }
+
+        const checkStyles = () => {
+
+        }
+
         const checkAnswer = (word, input) => {
-          
+          if (input.length === word.length) {
+            const status = findLetters(word, input)
+
+            // обновить стили букв
+            checkStyles()
+
+            if (status) {
+              // слово отгадано
+              appSuccess()
+            }
+
+            activeattempt.value += 1
+            activeindex.value = 0
+            appstate.attempts.push([...input])
+            appstate.current = input
+            wordinput.value = []
+            saveState(appstate)
+
+            attempts_left.value -= 1
+
+            if (attempts_left.value < 1) {
+              // не отгадано
+              appfinish()
+            }
+          }
         }
 
         const removeLetter = () => {
           wordinput.value.pop()
+          activeindex.value -= 1
         }
+
+        const addLetter = (letter) => {
+          wordinput.value.push(letter)
+          activeindex.value += 1
+        }
+
 
         const handleKeyPress = (key) => {
           if (key.action) {
@@ -90,24 +228,25 @@
             }
             if (key.action === 'backspace') {
               removeLetter()
-               activeindex.value += 1
             }
           } else {
             if (wordinput.value.length < 5) {
-              wordinput.value.push(key.label)
-              activeindex.value += 1
+              addLetter(key.label)
             }
           }
-          console.log(activeindex.value)
-          console.log(wordinput.value)
-
+          console.log(appstate)
         }
 
         return {
           word_letters,
           keys,
           wordinput,
-          activeindex,
+          appstate,
+          attempts_left,
+          isCellActive,
+          isCellSuccess,
+          isRowActive,
+          isRowAttemp,
           handleKeyPress
         }
       }

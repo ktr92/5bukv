@@ -1,0 +1,99 @@
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <link href="word.css" type="text/css" rel="stylesheet" />
+
+  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+
+</head>
+
+<body>
+
+  <div class="appwrapper">
+    <div id="app">
+
+      <div class="appwords">
+        <div class="appwords__items">
+          <div v-for="i in 6" class="appwords__row">
+            <div v-for="j in 5" class="appwords__col">
+              <div class="appwords__cell">
+                {{  }}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="keyboard">
+          <div v-for="(row, rowIndex) in keys" :key="rowIndex" class="keyboard__items">
+            <div v-for="key in row" :key="key.label" :id="`key_${key.label}`" class="key"
+              :class="{ 'special-key': key.isSpecial }" @click="handleKeyPress(key)"
+              :style="{ width: key.width || '50px', textAlign:'center' }">
+              {{ !key.isSpecial ? key.label: '' }}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div><!-- /.appwrapper -->
+  <script>
+    const { createApp, ref, computed } = Vue
+
+    const word = 'АФЕРА'
+    const attempts = 6
+    const allowed = true
+
+    createApp({
+      setup() {
+        const word_letters = computed(() => word.split(''))
+        const attempts_left = ref(attempts)
+        const allowed_state = ref(allowed)
+
+        const state = {
+          
+        }
+
+       
+        const keys = [
+          [
+            { label: 'Й' }, { label: 'Ц' }, { label: 'У' }, { label: 'К' }, { label: 'Е' },
+            { label: 'Н' }, { label: 'Г' }, { label: 'Ш' }, { label: 'Щ' }, { label: 'З' },
+            { label: 'Х' }, { label: 'Ъ' }
+          ],
+          [
+            { label: 'Ф' }, { label: 'Ы' }, { label: 'В' }, { label: 'А' }, { label: 'П' },
+            { label: 'Р' }, { label: 'О' }, { label: 'Л' }, { label: 'Д' }, { label: 'Ж' }, { label: 'Э' }
+          ],
+          [
+            { label: 'enter', isSpecial: true, width: '92px', action: 'enter' },
+            { label: 'Я' }, { label: 'Ч' }, { label: 'С' }, { label: 'М' }, { label: 'И' },
+            { label: 'Т' }, { label: 'Ь' }, { label: 'Б' }, { label: 'Ю' },
+            { label: 'backspace', isSpecial: true, width: '92px', action: 'backspace' }
+
+          ]
+        ]
+
+        const handleKeyPress = (key) => {
+          if (key.action) {
+            if (key.action === 'enter') {
+              console.log('checkword')
+            }
+            if (key.action === 'backspace') {
+              console.log('removeword')
+            }
+          }
+        }
+
+        return {
+          word_letters,
+          keys,
+          handleKeyPress
+        }
+      }
+    }).mount('#app')
+  </script>
+</body>
+
+</html>

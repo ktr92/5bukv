@@ -67,7 +67,6 @@
         } else {
           appstate = {
             attempts: [], // слова из предыдущих попыток 
-            current: '', // текущее вводимое слово
             letters_true: [], // отгаданные буквы
             letters_false: [] // исключенные буквы
           }
@@ -128,11 +127,17 @@
         // провеврка есть ли в этой ячейке нужная буква
         // сохранять предыдущие отгаданные буквы
         const isCellSuccess = (col_index, row_index) => {
+
+          // соотвествие текущей ячейки массиву введенных букв
           const cell_to_letter = appstate.letters_true[row_index] ? appstate.letters_true[row_index][col_index] : null
 
-          if (cell_to_letter && row_index === cell_to_letter.attemptnumber) {
-            return matches.value[col_index].letter === word_letters.value[col_index]
+          if (cell_to_letter) {
+            // если буква угадана на текущем шаге или была угадана ранее
+            
+              return cell_to_letter.letter === word_letters.value[col_index]
+            
           }
+
           return false
         }
 
@@ -160,21 +165,20 @@
           // проверяем точные попадания букв в нужном месте
           matches.value = input.map((item, index) => {
             // пропускаем угаданное ранее
-            if (appstate.letters_true[index]) {
-              return {
-                attemptnumber: activeattempt.value,
-                ...appstate.letters_true[index]
-              }
-            } else if (item === word[index]) {
+
+           
+            if (item === word[index]) {
               return {
                 letter: item,
                 index,
                 attemptnumber: activeattempt.value
               }
-            } 
+            }
           })
+
           appstate.letters_true.push(matches.value)
           console.log('matches: ', matches.value)
+          console.log('appstate: ', appstate.letters_true)
           return false
         }
 
@@ -197,7 +201,6 @@
             activeattempt.value += 1
             activeindex.value = 0
             appstate.attempts.push([...input])
-            appstate.current = input
             wordinput.value = []
             saveState(appstate)
 
@@ -234,7 +237,6 @@
               addLetter(key.label)
             }
           }
-          console.log(appstate)
         }
 
         return {

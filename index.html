@@ -14,17 +14,16 @@
 
   <div class="appwrapper">
     <div id="app">
-      <div style="color: #fff; font-size: 30px; text-align: center; font-weight: bold;">{{ attempts_left }}</div>
       <div class="appwords">
         <div class="appwords__items">
-          <div v-for="(row, row_index) in 6" :key="row" class="appwords__row">
-            <div v-for="(col, col_index) in 5" :key="`${row}${col}`" class="appwords__col">
+          <div v-for="(row, row_index) in attempts_total" :key="row" class="appwords__row">
+            <div v-for="(col, col_index) in word_length" :key="`${row}${col}`" class="appwords__col">
               <div class="appwords__cell" :class="checkCell(row_index, col_index)">
                 <template v-if="isRowActive(row_index)">
                   {{ wordinput[col_index] }}
                 </template>
                 <template v-if="isRowAttemp(row_index)">
-                  {{ appstate.attempts[row_index][col_index] }}
+                  {{ appstate.value.attempts[row_index][col_index] }}
                 </template>
               </div>
             </div>
@@ -43,42 +42,76 @@
       </div>
     </div>
   </div><!-- /.appwrapper -->
-  <script>
+  <script type="text/javascript">
+    /**
+     *
+     */
     const { createApp, ref, computed, reactive } = Vue
 
+    // загаданное слово
     const word = 'АФЕРА'
+    // сколько попыток у пользователя в данной сессии
     const attempts = 6
+    // можно ли этому пользователю сегодня играть 
     const allowed = true
 
     createApp({
       setup() {
+        // исходное слово в виде массива букв
         const word_letters = computed(() => word.split(''))
         const attempts_left = ref(attempts)
+        const attempts_total = ref(attempts)
         const allowed_state = ref(allowed)
-        const matches = ref([])
-        const status = ref(false)
-        let appstate = {}
+        const word_length = computed(() => word.length)
 
+
+        // в этом массиве будет храниться информация о совпадениях букв 
+        // !!! в текущей попытке
+        const matches = ref([])
+        // статус приложение - отгадал слово или нет
+        const status_success = ref(false)
+
+        /**
+         * Объект состояния приложения.
+         * @typedef {Object} AppState
+         * @property {Array<string>} attempts - слова из предыдущих попыток для вывода их в "таблице-кроссворде".
+         * @property {Array<LetterState>} letters_true - информация о совпадениях букв (вся сессия).
+         * @property {Set<string>} letters_found - присутствующие буквы.
+         * @property {Set<string>} letters_false - отсутствующие буквы.
+         */
+
+        /**
+         * Статус каждой буквы в попытке
+         * @typedef {Object} LetterState
+         * @property {String} letter - проверяемая буква
+         * @property {Number} index - индекс проверяемой буквы
+         * @property {boolean} found - отгадана или нет
+         */
+
+         /** 
+         * Объект состояния приложения.
+         * @type {AppState}
+         */
+        let appstate = reactive({})
         // если попыток менее 6, значит сегодня уже пытался отгадать, а значит берем состояние из хранилища
         if (attempts_left.value > 10) {
-          getState()
+          getLocalState()
         } else {
-          appstate = {
-            attempts: [], // слова из предыдущих попыток 
-            letters_true: [], // отгаданные буквы
-            letters_found: new Set(), // присутствующие буквы
-            letters_false: new Set() // исключенные буквы
+          appstate.value= {
+            attempts: [],
+            letters_true: [], 
+            letters_found: new Set(), 
+            letters_false: new Set() 
           }
         }
 
 
         // индекс текущей вводимой буквы
         const activeindex = ref(0)
-        // номер попытки
+        // номер попытки = номер текущей активной строки
         const activeattempt = ref(0)
         // текущее вводимое слово - массив введенных букв
         const wordinput = ref([])
-
 
         // клавиатура
         const keys = [
@@ -100,122 +133,121 @@
           ]
         ]
 
-        // загрузка текущего состояние в лок.хранилище если пользователь уже заходил сегодня
-        const getState = () => {
-          appstate = JSON.parse(localStorage.getItem('appstate'))
+        /**
+         *  загрузка текущего состояния из лок.хранилища если пользователь уже заходил сегодня
+         */
+        const getLocalState = () => {
+          appstate.value= JSON.parse(localStorage.getItem('appstate'))
           attempts_left.value = JSON.parse(localStorage.getItem('attempts_left'))
         }
-        // сохранение текущего состояние в лок.хранилище
+        /**
+         * сохранение текущего состояние в лок.хранилище
+         * @param {AppState} - состояние приложения
+         */
         const saveState = (state) => {
           localStorage.setItem('appstate', JSON.stringify(state))
           localStorage.setItem('attempts_left', JSON.stringify(attempts_left.value))
         }
-        // очистка состояние в лок.хранилище если у пользователя есть новая попытка
-        const clearState = (state) => {
+        /**
+         * очистка состояние в лок.хранилище если у пользователя есть новая попытка
+         */
+        const clearState = () => {
           localStorage.removeItem('appstate')
           localStorage.removeItem('attempts_left')
         }
-
-        // проверка на активность ячейки 
-        // слово - это номер попытки = строка, 
-        // буква - это текущий активный индекс который сбрасывается при переходе к новой попытке (все буквы меньше этого индекса активны)
-        const isCellActive = (col_index, row_index) => {
-          return activeindex.value > col_index && activeattempt.value === row_index
+   
+        /**
+         * получить букву соотвествующую текущей ячейке
+         * @param {number} row_index - строка "Таблицы"
+         * @param {number} col_index - столбец "Таблицы"
+         * @returns {LetterState} - состояние соотвествующей буквы для проверяемой ячейки
+         */
+        const getCell = (row_index, col_index) => {        
+          return appstate.value.letters_true[row_index] ? appstate.value.letters_true[row_index][col_index] : null
         }
+         
 
-        const getCell = (row, col) => {
-          return appstate.letters_true[row] ? appstate.letters_true[row][col] : null
-        }
-
-        // определение статуса каждой буквы
+        // возможные значения классов для ячеек таблицы после проверки
+         const CLASS_TYPES = {
+          SUCCESS: 'successcell',
+          FOUND: 'foundcell',
+          FAIL: 'failcell',
+          DEFAULT: ''
+        };
+        /**
+         * определить класс для отображения буквы
+         * @param {number} row_index - строка "Таблицы"
+         * @param {number} col_index - столбец "Таблицы"
+         * @returns {CLASS_TYPES} - состояние соотвествующей буквы для проверяемой ячейки
+         */
         const checkCell = (row_index, col_index) => {
           const cell_to_letter = getCell(row_index, col_index)
-              console.log("cell_to_letter: ", cell_to_letter)
 
           if (cell_to_letter && cell_to_letter.letter) {
             const letter_input = cell_to_letter.letter 
             if (letter_input === word_letters.value[col_index]) {
-              return 'successcell'
+              return CLASS_TYPES.SUCCESS
             } 
-            if (appstate.letters_found.has(letter_input)) {
-              return 'foundcell'
+            if (appstate.value.letters_found.has(letter_input)) {
+              return CLASS_TYPES.FOUND
             }  
-            if (appstate.letters_false.has(letter_input)) {
-              return 'failcell'
+            if (appstate.value.letters_false.has(letter_input)) {
+              return CLASS_TYPES.FAIL
             }
           }
-          return ''
+          return CLASS_TYPES.DEFAULT
         }
 
-        // провеврка если вообще нет такой буквы
-        const isCellFail = (col_index, row_index) => {
-          // соотвествие текущей ячейки массиву введенных букв
-          const cell_to_letter = getCell(row_index, col_index)
-
-          if (cell_to_letter) {
-            return !word_letters.value.includes(cell_to_letter.letter)
-          }
-          return true
-        }
-        // провеврка есть ли такая буква вообще в слове
-        const isCellFound = (col_index, row_index) => {
-
-          // соотвествие текущей ячейки массиву введенных букв
-          const cell_to_letter = getCell(row_index, col_index)
-
-          if (cell_to_letter) {
-            return word_letters.value.includes(cell_to_letter.letter)
-          }
-          return false
-        }
-        // провеврка есть ли в этой ячейке нужная буква
-        // сохранять предыдущие отгаданные буквы
-        const isCellSuccess = (col_index, row_index) => {
-
-          // соотвествие текущей ячейки массиву введенных букв
-          const cell_to_letter = getCell(row_index, col_index)
-
-          if (cell_to_letter) {
-            return cell_to_letter.letter === word_letters.value[col_index]
-          }
-          return false
-        }
-        // проверка в какой строке выводить текущее вводимое слово (текущая попытка = номер строки)
+        /**
+         * проверка в какой строке выводить текущее вводимое слово (текущая попытка = номер строки)
+         * @param {number} row_index - строка "Таблицы"
+         * @returns {boolean} - в проверяемой строке или нет
+         */
         const isRowActive = (row_index) => {
           return activeattempt.value === row_index
         }
-        // проверка выводить ли в этой строке ранее введенное слово
+
+        /**
+         * проверка выводить ли в этой строке ранее введенное слово
+         * @param {number} row_index - строка "Таблицы"
+         * @returns {boolean} - в проверяемой строке или нет
+         */
         const isRowAttemp = (row_index) => {
           return activeattempt.value > row_index
         }
 
+        /**
+         * конец игры при исчерпании попыток
+         */
         const appfinish = () => {
           // если попытки закончились и слово не отгадано
           console.log('FAIL !!!!')
         }
 
+         /**
+         * конец игры при успешном отгадывании слова
+         */
         const appSuccess = () => {
           // если слово отагадано
-          status.value = true
+          status_success.value = true
           console.log('SUCESS !!!!')
         }
 
-
-
-
+        /**
+         * определении статуса букв во введенном слове
+         * @param {Array<string>} word - искомое слово
+         * @returns {Array<string>} - слово которое ввел пользователь
+         */
         const findLetters = (word, input) => {
-          // проверяем точные попадания букв в нужном месте
           matches.value = input.map((item, index) => {
-
             const letterstate = {
               letter: item,
-              index,
-              attemptnumber: activeattempt.value,
+              index
             }
 
             if (item === word[index]) {
               // если буква на нужном месте
-              appstate.letters_found.add(item)
+              appstate.value.letters_found.add(item)
 
               return {
                 ...letterstate,
@@ -224,7 +256,7 @@
             }
             else if (word.includes(item)) {
               // если буква есть где то в другом месте
-              appstate.letters_found.add(item)
+              appstate.value.letters_found.add(item)
                 return {
                 ...letterstate,
                 found: false
@@ -232,15 +264,17 @@
             }
             else {
               // если буквы нет вообще
-              appstate.letters_false.add(item)
+              appstate.value.letters_false.add(item)
                 return {
                 ...letterstate,
                 found: false
               }
             }
           })
-          appstate.letters_true.push(matches.value)
+          // сохраняем статус данного слова
+          appstate.value.letters_true.push(matches.value)
 
+          // проверяем не угадано ли слово целиком
           if (matches.value.every(item => item !== undefined && item && item !== null && item.found === true)) {
             appSuccess()
           }
@@ -249,20 +283,27 @@
           console.log('appstate: ', appstate)
         }
 
-      
+        /**
+         * проверка слова с продвижение далее к новой попытке
+         * @param {Array<string>} word - искомое слово
+         * @param {Array<string>} input -  слово которое ввел пользователь
+         */
         const checkAnswer = (word, input) => {
           if (input.length === word.length) {
+            // проверка букв
             findLetters(word, input)
 
-
+            // смена шага-попытки
             activeattempt.value += 1
             activeindex.value = 0
-            appstate.attempts.push([...input])
+            appstate.value.attempts.push([...input])
             wordinput.value = []
-            saveState(appstate)
-
             attempts_left.value -= 1
 
+            // после каждой попытки сохраняем состояние в локю хранилище чтобы пользователь не мог перезагрузить страницу и продлить попытки
+            saveState(appstate)
+
+            // проверяем не исчерпаны ли все попытки
             if (attempts_left.value < 1) {
               // не отгадано
               appfinish()
@@ -270,42 +311,77 @@
           }
         }
 
+        /**
+         * обработка кнопки удаления буквы - уменьшение индекса текущего ввода
+         */
         const removeLetter = () => {
           wordinput.value.pop()
           activeindex.value -= 1
         }
 
+         /**
+         * ввод буквы - смена индекса и добавление буквы в проверяемый массив букв (т.е. слово) 
+         * @param {string} letter - вводимая буква
+         */ 
         const addLetter = (letter) => {
           wordinput.value.push(letter)
           activeindex.value += 1
         }
 
+        const KEY_STATUS = {
+          DISABLED: 'key_disabled',
+          SUCCESS: 'key_success',
+          FOUND: 'key_found',
+          DEFAULT: '',
+        }
+        const KEY_ACTION = {
+          ENTER: 'enter',
+          BACKSPACE: 'backspace'
+        }
 
+        /**
+         * Объект кнопки клавиатуры
+         * @typedef {Object} Key
+         * @property {string} label - буква для кнопки 
+         * @property {boolean} [isSpecial] - нестандартная кнопка, т.е. является ли эта кнопка функциональной, а не просто буквой
+         * @property {string} [width] - нестандартная ширина буквы
+         * @property {KEY_ACTION} [action] - идентификатор действия
+         * @property {KEY_STATUS} [status] - статус кнопки после проверки на наличие этой буквы в слове
+         */
+
+         /**
+         * обработка ввода буквы клавиатуры
+         * @param {Key} key - нажатая кнопка
+         */ 
         const handleKeyPress = (key) => {
-          if (status.value) {
+          // если слово отгадано то больше ничего не вводим
+          if (status_success.value) {
             return
           }
           if (key.action) {
-            if (key.action === 'enter') {
+            if (key.action === KEY_ACTION.ENTER) {
               checkAnswer(word_letters.value, wordinput.value)
             }
-            if (key.action === 'backspace') {
+            if (key.action === KEY_ACTION.BACKSPACE) {
               removeLetter()
             }
           } else {
-            if (wordinput.value.length < 5) {
+            // ввод букв
+            if (wordinput.value.length < word_length.value) {
               addLetter(key.label)
             }
           }
         }
 
         return {
+          attempts_total,
+          word_length,
           word_letters,
           keys,
           wordinput,
           appstate,
           attempts_left,
-         checkCell,
+          checkCell,
           isRowActive,
           isRowAttemp,
           handleKeyPress

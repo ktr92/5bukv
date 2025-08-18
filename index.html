@@ -32,10 +32,11 @@
 
         <div class="keyboard">
           <div v-for="(row, rowIndex) in keys" :key="rowIndex" class="keyboard__items">
-            <div v-for="key in row" :key="key.label" :id="`key_${key.label}`" class="key"
-              :class="{ 'special-key': key.isSpecial, 'disabled': key.disabled }" @click="handleKeyPress(key)"
-              :style="{ width: key.width || '50px', textAlign:'center' }">
-              {{ !key.isSpecial ? key.label: '' }}
+            <div v-for="key in row" :key="key.label" :id="`key_${key.label}`"
+              :class="{ 'special-key': key.isSpecial, 'disabled': key.disabled }" @click="handleKeyPress(key)">
+              <span :class="checkKey(key)" class="key" :style="{ width: key.width || '50px', textAlign:'center' }"> {{
+                !key.isSpecial ? key.label: '' }}</span>
+
             </div>
           </div>
         </div>
@@ -44,14 +45,20 @@
   </div><!-- /.appwrapper -->
   <script type="text/javascript">
     /**
-     *
+     * Механика игры такая: один раз в день мы загадываем одно из указанных в списке выше слов, пользователь пытается угадать это слово путем ввода других  слов из 5 букв. 
+     * Если в слове из его попытки есть верная буква и она стоит на правильном месте - она закрашивается синим цветом. Если такая буква есть, но она стоит не на том месте - она окрашивается в белый. Если буквы в слове нет, она окрашивается в серый. 
+     * Окрашивание букв дублируется и в самом поле ввода слова и на клавиатуре.
+     * Если пользователь отгадал слово за 6 попыток, показываем ему попам "Вы угадали!", если не отгадал - попап с верным словом и предложением испытать удачу завтра.
+     * Новое слово должно быть доступно в 00:00:01 нового дня по московскому времени.
+     * Нужно сохранять куки, чтобы при повторном заходе в течение тех же суток у пользователя, который уже сыграл на странице игры висел соответствующий попап.
+     * Слова можно показывать в рандомном порядке. Как только все 67 слов загаданы, начинаем список сначала.
      */
     const { createApp, ref, computed, reactive } = Vue
 
     // загаданное слово
     const word = 'АФЕРА'
     // сколько попыток у пользователя в данной сессии
-    const attempts = 6
+    const attempts = word.length
     // можно ли этому пользователю сегодня играть 
     const allowed = true
 
@@ -88,20 +95,20 @@
          * @property {boolean} found - отгадана или нет
          */
 
-         /** 
-         * Объект состояния приложения.
-         * @type {AppState}
-         */
+        /** 
+        * Объект состояния приложения.
+        * @type {AppState}
+        */
         let appstate = reactive({})
         // если попыток менее 6, значит сегодня уже пытался отгадать, а значит берем состояние из хранилища
         if (attempts_left.value > 10) {
           getLocalState()
         } else {
-          appstate.value= {
+          appstate.value = {
             attempts: [],
-            letters_true: [], 
-            letters_found: new Set(), 
-            letters_false: new Set() 
+            letters_true: [],
+            letters_found: new Set(),
+            letters_false: new Set()
           }
         }
 
@@ -133,11 +140,13 @@
           ]
         ]
 
+
+
         /**
          *  загрузка текущего состояния из лок.хранилища если пользователь уже заходил сегодня
          */
         const getLocalState = () => {
-          appstate.value= JSON.parse(localStorage.getItem('appstate'))
+          appstate.value = JSON.parse(localStorage.getItem('appstate'))
           attempts_left.value = JSON.parse(localStorage.getItem('attempts_left'))
         }
         /**
@@ -155,20 +164,20 @@
           localStorage.removeItem('appstate')
           localStorage.removeItem('attempts_left')
         }
-   
+
         /**
          * получить букву соотвествующую текущей ячейке
          * @param {number} row_index - строка "Таблицы"
          * @param {number} col_index - столбец "Таблицы"
          * @returns {LetterState} - состояние соотвествующей буквы для проверяемой ячейки
          */
-        const getCell = (row_index, col_index) => {        
+        const getCell = (row_index, col_index) => {
           return appstate.value.letters_true[row_index] ? appstate.value.letters_true[row_index][col_index] : null
         }
-         
+
 
         // возможные значения классов для ячеек таблицы после проверки
-         const CLASS_TYPES = {
+        const CLASS_TYPES = {
           SUCCESS: 'successcell',
           FOUND: 'foundcell',
           FAIL: 'failcell',
@@ -184,19 +193,34 @@
           const cell_to_letter = getCell(row_index, col_index)
 
           if (cell_to_letter && cell_to_letter.letter) {
-            const letter_input = cell_to_letter.letter 
+            const letter_input = cell_to_letter.letter
             if (letter_input === word_letters.value[col_index]) {
               return CLASS_TYPES.SUCCESS
-            } 
+            }
             if (appstate.value.letters_found.has(letter_input)) {
               return CLASS_TYPES.FOUND
-            }  
+            }
             if (appstate.value.letters_false.has(letter_input)) {
               return CLASS_TYPES.FAIL
             }
           }
           return CLASS_TYPES.DEFAULT
         }
+
+        const checkKey = (key) => {
+          console.log(key)
+          if (key.label) {
+            const letter_key = key.label
+            if (appstate.value.letters_found.has(letter_key)) {
+              return CLASS_TYPES.FOUND
+            }
+            if (appstate.value.letters_false.has(letter_key)) {
+              return CLASS_TYPES.FAIL
+            }
+          }
+          return CLASS_TYPES.DEFAULT
+        }
+
 
         /**
          * проверка в какой строке выводить текущее вводимое слово (текущая попытка = номер строки)
@@ -224,9 +248,9 @@
           console.log('FAIL !!!!')
         }
 
-         /**
-         * конец игры при успешном отгадывании слова
-         */
+        /**
+        * конец игры при успешном отгадывании слова
+        */
         const appSuccess = () => {
           // если слово отагадано
           status_success.value = true
@@ -257,7 +281,7 @@
             else if (word.includes(item)) {
               // если буква есть где то в другом месте
               appstate.value.letters_found.add(item)
-                return {
+              return {
                 ...letterstate,
                 found: false
               }
@@ -265,7 +289,7 @@
             else {
               // если буквы нет вообще
               appstate.value.letters_false.add(item)
-                return {
+              return {
                 ...letterstate,
                 found: false
               }
@@ -319,10 +343,10 @@
           activeindex.value -= 1
         }
 
-         /**
-         * ввод буквы - смена индекса и добавление буквы в проверяемый массив букв (т.е. слово) 
-         * @param {string} letter - вводимая буква
-         */ 
+        /**
+        * ввод буквы - смена индекса и добавление буквы в проверяемый массив букв (т.е. слово) 
+        * @param {string} letter - вводимая буква
+        */
         const addLetter = (letter) => {
           wordinput.value.push(letter)
           activeindex.value += 1
@@ -349,10 +373,10 @@
          * @property {KEY_STATUS} [status] - статус кнопки после проверки на наличие этой буквы в слове
          */
 
-         /**
-         * обработка ввода буквы клавиатуры
-         * @param {Key} key - нажатая кнопка
-         */ 
+        /**
+        * обработка ввода буквы клавиатуры
+        * @param {Key} key - нажатая кнопка
+        */
         const handleKeyPress = (key) => {
           // если слово отгадано то больше ничего не вводим
           if (status_success.value) {
@@ -380,8 +404,8 @@
           keys,
           wordinput,
           appstate,
-          attempts_left,
           checkCell,
+          checkKey,
           isRowActive,
           isRowAttemp,
           handleKeyPress

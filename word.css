@@ -53,26 +53,7 @@ body {
   line-height: 34px;
   font-weight: bold;
 }
-.appwords__cell.activecell {
-  background: #453c74;
-  border-color: #453C74;
-}
-.appwords__cell.failcell {
-  background: #453C74;
-  color: #fff;
-  border-color: #453C74;
-}
-.appwords__cell.foundcell {
-  background: #fff;
-  color: #000;
-  border-color: #fff;
-}
 
-.appwords__cell.successcell {
-  background: #4664ff;
-  border-color: #4664ff;
-  color: #fff;
-}
 
 .keyboard {
   margin-top: 40px;
@@ -92,6 +73,7 @@ body {
     justify-content: center;
 }
 .key {  
+  display: block;
   font-weight: bold;
   font-weight: 500;
   font-size: 19px;
@@ -114,16 +96,16 @@ body {
 }
 
 /* Можно добавить стили для специальных клавиш, например, Backspace, Enter */
-.special-key {
+.special-key span  {
   background-color: #ccc;
 }
 
-#key_enter {
+#key_enter span {
   background: #4664ff;
   border-color: #4664ff;
   position: relative;
 }
-#key_enter:after {
+#key_enter span:after {
   content: url('data:image/svg+xml,<svg width="18" height="13" viewBox="0 0 18 13" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M6.5501 12.5L0.850098 6.79998L2.2751 5.37498L6.5501 9.64998L15.7251 0.474976L17.1501 1.89998L6.5501 12.5Z" fill="white"/></svg>');
   position: absolute;
   left: 0;
@@ -131,16 +113,40 @@ body {
   top: 50%;
   transform: translateY(-50%);
 }
-#key_backspace {
+#key_backspace span {
   background: #ffffff;
   border-color: #fff;
   position: relative;
 }
-#key_backspace:after {
+#key_backspace span:after {
   content: url('data:image/svg+xml,<svg width="20" height="17" viewBox="0 0 20 17" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M9.4 12.5L12 9.9L14.6 12.5L16 11.1L13.4 8.5L16 5.9L14.6 4.5L12 7.1L9.4 4.5L8 5.9L10.6 8.5L8 11.1L9.4 12.5ZM7 16.5C6.68333 16.5 6.38333 16.4292 6.1 16.2875C5.81667 16.1458 5.58333 15.95 5.4 15.7L0 8.5L5.4 1.3C5.58333 1.05 5.81667 0.854167 6.1 0.7125C6.38333 0.570833 6.68333 0.5 7 0.5H18C18.55 0.5 19.0208 0.695833 19.4125 1.0875C19.8042 1.47917 20 1.95 20 2.5V14.5C20 15.05 19.8042 15.5208 19.4125 15.9125C19.0208 16.3042 18.55 16.5 18 16.5H7ZM2.5 8.5L7 14.5H18V2.5H7L2.5 8.5Z" fill="black"/></svg>');
   position: absolute;
   left: 0;
   right: 0;
   top: 50%;
   transform: translateY(-50%);
+}
+.activecell, .activecell .key {
+  background: #453c74;
+  border-color: #453C74;
+}
+.failcell, .failcell .key {
+  background: #453C74;
+  color: #fff;
+  border-color: #453C74;
+}
+.failcell, .failcell .key  {
+  cursor: not-allowed;
+  pointer-events: none;
+}
+.foundcell, .foundcell .key {
+  background: #fff;
+  color: #000;
+  border-color: #fff;
+}
+
+.successcell {
+  background: #4664ff;
+  border-color: #4664ff;
+  color: #fff;
 }

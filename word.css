@@ -1,3 +1,13 @@
+@font-face {
+	font-family: 'DrukTextWideCyr-Medium';
+	src: url('druktextwidecyr-medium.eot'); /* IE 9 Compatibility Mode */
+	src: url('druktextwidecyr-medium.eot?#iefix') format('embedded-opentype'), /* IE < 9 */
+		url('druktextwidecyr-medium.woff2') format('woff2'), /* Super Modern Browsers */
+		url('druktextwidecyr-medium.woff') format('woff'), /* Firefox >= 3.6, any other modern browser */
+		url('druktextwidecyr-medium.ttf') format('truetype'), /* Safari, Android, iOS */
+		url('druktextwidecyr-medium.svg#druktextwidecyr-medium') format('svg'); /* Chrome < 4, Legacy iOS */
+}
+
 body {
   padding: 0;
   margin: 0;
@@ -50,6 +60,11 @@ body {
   vertical-align: middle;
   line-height: 34px;
   font-weight: bold;
+  font-weight: 500;
+font-size: 25px;
+line-height: 140%;
+  font-family: 'DrukTextWideCyr-Medium';
+  text-transform: uppercase;
 }
 
 
@@ -86,11 +101,13 @@ body {
   max-width: 92px;
   height: 53px;
   cursor: pointer;
+  font-family: 'DrukTextWideCyr-Medium';
 }
 
 .key:hover {
   background-color: #4664ff;
   border-color: #4664ff;
+  color: #fff;
 }
 
 /* Можно добавить стили для специальных клавиш, например, Backspace, Enter */
@@ -147,4 +164,85 @@ body {
   background: #4664ff;
   border-color: #4664ff;
   color: #fff;
+}
+
+.appmodal__header {
+  display: flex;
+  justify-content: space-between;
+}
+.appmodal__header {
+  position: absolute;
+  right: 24px;
+  top: 24px;
+  z-index: 3;
+}
+.appmodal {
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom: 40px;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  position: relative;
+  border-radius: 24px;
+padding: 80px;
+width: 744px;
+
+box-shadow: 0 1px 4px 0 rgba(0, 0, 0, 0.06);
+background: #22194e;
+}
+
+.appmodal__message {
+  font-family: 'DrukTextWideCyr-Medium';
+font-weight: 500;
+font-size: 28px;
+line-height: 130%;
+text-align: center;
+color: #fff;
+margin-bottom: 40px;
+}
+
+.appmodal__button a {
+  color: #fff;
+  margin: auto;
+  display: block;
+  text-align: center;
+border-radius: 16px;
+padding: 16px 24px;
+width: 228px;
+
+
+min-width: 150px;
+background: #4563FF;
+}
+
+.btn_modalapp {
+  position: absolute; 
+  right: 35px;
+  top: 10px;
+}
+
+.appcontainer {
+  position: relative;
+}
+
+#myModal_app .modal-dialog {
+  width: unset;
+}
+.appmodal__text {
+  font-weight: 400;
+font-size: 18px;
+color: #fff;
+line-height: 1.3;
+
+margin-bottom: 40px;
+}
+
+.appmodal__line {
+  margin-bottom: 40px;
+  background: #584c93;
+  height: 1px;
+}
+.appmodal__example {
+  margin-bottom: 40px;
 }

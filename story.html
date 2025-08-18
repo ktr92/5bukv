@@ -608,6 +608,17 @@
         createApp({
           setup() {
 
+            const today = new Date().toISOString().slice(0, 10);
+            if (localStorage.getItem('lastResetDate') !== today) {
+              localStorage.removeItem('appsuccess');
+              localStorage.removeItem('appfail');
+              localStorage.removeItem('attempts_left');
+              localStorage.removeItem('appstate_found');
+              localStorage.removeItem('appstate_false');
+              localStorage.removeItem('appstate');
+              localStorage.setItem('lastResetDate', today);
+            }
+
             // исходное слово в виде массива букв
             const word_letters = computed(() => word.split(''))
             const attempts_local = JSON.parse(localStorage.getItem('attempts_left'))

@@ -188,15 +188,6 @@
 
 <body class="">
 
-  <style>
-    body {
-      background-color: #090033;
-      background-image: url(bg.png);
-      background-position: center;
-      background-size: cover;
-      min-height: 100vh;
-    }
-  </style>
 
   <header id="header" class="header clearfix header_v2">
     <a name="top"></a>
@@ -532,7 +523,7 @@
     </a>
     <div id="myModal_app" class="modal fade">
         <div class="modal-dialog">
-      <div class="appmodal">
+      <div class="appmodal ">
           <div class="appmodal__header">
             <a href="#" data-dismiss="modal">
               <svg width="48" height="49" viewBox="0 0 48 49" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -549,7 +540,7 @@
 
             </a>
           </div>
-          <div class="appmodal__message">Правила игры «5 букв»</div>
+          <div class="appmodal__message">Правила игры «5&nbsp;букв»</div>
           <div class="appmodal__text">На разгадку у вас шесть попыток. После каждой попытки цвет букв меняется. Вот что означают цвета.</div><!-- /.appmodal__text -->
           <div class="appmodal__line"></div><!-- /.appmodal__line -->
           <div class="appmodal__example">
@@ -568,14 +559,14 @@
           <div class="appmodal__text">Когда вы угадаете слово, все буквы окрасятся в синий.</div><!-- /.appmodal__text -->
           <div class="appmodal__text">В загаданном слове могут встретиться повторяющиеся буквы, например буква «Т» в слове «Театр». Буквы «Ё» в игре нет, вместо нее используйте «Е» — как в кроссворде.</div><!-- /.appmodal__text -->
           <div class="appmodal__button">
-            <a href="#" data-dismiss="modal">Играть</a>
+            <a href="#" data-dismiss="modal" class="">Играть</a>
           </div>
         </div>
         </div>
     </div>
     <div class="appwrapper">
       <div id="app">
-        <div class="appmodal" v-if="status_success">
+        <div class="appmodal appmodal_status" v-if="status_success">
           <div class="appmodal__header">
             <a href="#">
               <svg width="48" height="49" viewBox="0 0 48 49" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -597,7 +588,7 @@
             <a href="#">Играть еще раз!</a>
           </div>
         </div>
-        <div class="appmodal" v-if="status_fail">
+        <div class="appmodal appmodal_status" v-if="status_fail">
           <div class="appmodal__header">
             <a href="#">
               <svg width="48" height="49" viewBox="0 0 48 49" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -646,6 +637,9 @@
               </div>
             </div>
           </div>
+
+
+           <a href="#myModal_app" data-toggle="modal" class="btn_modalapp_xs">Правила игры</a>
         </div>
       </div>
     </div><!-- /.appwrapper -->

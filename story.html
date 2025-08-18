@@ -508,7 +508,7 @@
       </div>
       <div class="appwrapper">
         <div id="app">
-          <div class="appmodal appmodal_status" v-if="status_success">
+          <div class="appmodal appmodal_status" v-if="status_success && !status_fail">
             <div class="appmodal__header">
               <a href="#">
                 <svg width="48" height="49" viewBox="0 0 48 49" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -530,7 +530,7 @@
               <a href="#">Играть еще раз!</a>
             </div>
           </div>
-          <div class="appmodal appmodal_status" v-if="status_fail">
+          <div class="appmodal appmodal_status" v-if="status_fail && !status_success">
             <div class="appmodal__header">
               <a href="#">
                 <svg width="48" height="49" viewBox="0 0 48 49" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -547,7 +547,7 @@
 
               </a>
             </div>
-            <div class="appmodal__message">Мы загадали другое слово — карта. <br> <br>
+            <div class="appmodal__message">Мы загадали другое слово — фильм. <br> <br>
               Попробуйте сыграть еще раз, чтобы испытать удачу!</div>
             <div class="appmodal__button">
               <a href="#">Играть еще раз!</a>

@@ -508,9 +508,9 @@
       </div>
       <div class="appwrapper">
         <div id="app">
-          <div class="appmodal appmodal_status" v-if="status_success && !status_fail">
+          <div class="appmodal appmodal_status" v-if="status_success && !status_fail && showSuccess">
             <div class="appmodal__header">
-              <a href="#">
+              <a href="#" @click.prevent="closeSuccess">
                 <svg width="48" height="49" viewBox="0 0 48 49" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <mask id="mask0_32999_253840" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="0" y="0"
                     width="48" height="49">
@@ -525,14 +525,14 @@
 
               </a>
             </div>
-            <div class="appmodal__message">Вы отгадали слово — играйте еще!</div>
-            <div class="appmodal__button">
+            <div class="appmodal__message">Вы отгадали слово! Приходите завтра, чтобы вновь испытать удачу!</div>
+            <!-- <div class="appmodal__button">
               <a href="#">Играть еще раз!</a>
-            </div>
+            </div> -->
           </div>
-          <div class="appmodal appmodal_status" v-if="status_fail && !status_success">
+          <div class="appmodal appmodal_status" v-if="status_fail && !status_success && showFail">
             <div class="appmodal__header">
-              <a href="#">
+              <a href="#" @click.prevent="closeFail">
                 <svg width="48" height="49" viewBox="0 0 48 49" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <mask id="mask0_32999_253840" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="0" y="0"
                     width="48" height="49">
@@ -548,12 +548,12 @@
               </a>
             </div>
             <div class="appmodal__message">Мы загадали другое слово — фильм. <br> <br>
-              Попробуйте сыграть еще раз, чтобы испытать удачу!</div>
-            <div class="appmodal__button">
+              Приходите завтра, чтобы вновь испытать удачу!</div>
+            <!-- <div class="appmodal__button">
               <a href="#">Играть еще раз!</a>
-            </div>
+            </div> -->
           </div>
-          <div class="appwords" v-if="appstate && !status_fail">
+          <div class="appwords" v-if="appstate">
             <div class="appwords__items">
               <div v-for="(row, row_index) in attempts_total" :key="row" class="appwords__row">
                 <div v-for="(col, col_index) in word_length" :key="`${row}${col}`" class="appwords__col">
@@ -634,6 +634,15 @@
             // статус приложение - отгадал слово или нет
             const status_success = ref(false)
             const status_fail = ref(false)
+            const showSuccess = ref(false)
+            const showFail = ref(false)
+
+            const closeSuccess = () => {
+              showSuccess.value = false
+            }
+            const closeFail = () => {
+              showFail.value = false
+            }
 
 
             // индекс текущей вводимой буквы
@@ -678,6 +687,7 @@
               // если попытки закончились и слово не отгадано
               status_fail.value = true
               localStorage.setItem('appfail', true)
+              showFail.value = true
             }
 
             /**
@@ -687,6 +697,7 @@
               // если слово отагадано
               status_success.value = true
               localStorage.setItem('appsuccess', true)
+              showSuccess.value = true
             }
             /**
              *  загрузка текущего состояния из лок.хранилища если пользователь уже заходил сегодня
@@ -998,7 +1009,11 @@
               isRowAttemp,
               handleKeyPress,
               status_fail,
-              status_success
+              status_success,
+              showSuccess,
+              closeSuccess,
+              closeFail,
+              showFail
             }
           }
         }).mount('#app')

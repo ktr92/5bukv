@@ -596,7 +596,7 @@
          * Нужно сохранять куки, чтобы при повторном заходе в течение тех же суток у пользователя, который уже сыграл на странице игры висел соответствующий попап.
          * Слова можно показывать в рандомном порядке. Как только все 67 слов загаданы, начинаем список сначала.
          */
-        const { createApp, ref, computed, reactive } = Vue
+        const { createApp, ref, computed, reactive, onMounted } = Vue
 
         // загаданное слово
         const word = 'ФИЛЬМ'
@@ -643,6 +643,8 @@
             const closeFail = () => {
               showFail.value = false
             }
+
+
 
 
             // индекс текущей вводимой буквы
@@ -731,7 +733,7 @@
 
             // если попыток менее, значит сегодня уже пытался отгадать, а значит берем состояние из хранилища
             if (attempts_left.value < word_length.value) {
-            
+
 
               // проверяем не исчерпаны ли все попытки
               if (localStorage.getItem('appfail') && JSON.parse(localStorage.getItem('appfail'))) {
@@ -742,7 +744,7 @@
                 appSuccess()
               }
 
-                getLocalState()
+              getLocalState()
 
             } else {
               appstate.value = {
@@ -775,6 +777,8 @@
 
               ]
             ]
+
+           
 
 
 
@@ -962,6 +966,8 @@
               BACKSPACE: 'backspace'
             }
 
+
+           
             /**
              * Объект кнопки клавиатуры
              * @typedef {Object} Key
@@ -995,6 +1001,20 @@
                 }
               }
             }
+
+            /**
+             * При вводе с клавиатуры русских букв, заполняем ячейки
+             */
+              onMounted(() => {
+                document.addEventListener('keydown', (e) => {
+                  // найти кнопку вирт. клавиатуры соотвествующую нажатой клавише
+                  const key = keys.flat().filter(item => item.label.toLocaleLowerCase() === e.key.toLocaleLowerCase())
+                  if (key && key.length) {
+                     handleKeyPress(key[0])
+                  }
+                })
+              })
+
 
             return {
               attempts_total,

@@ -11,6 +11,7 @@
       url("druktextwidecyr-medium.svg#druktextwidecyr-medium") format("svg"); /* Chrome < 4, Legacy iOS */
 }
 
+
 body {
   padding: 0;
   margin: 0;
@@ -30,9 +31,11 @@ body {
 
 .appwords {
   position: relative;
+
 }
 .appwords__items {
   max-width: 386px;
+ /*  max-width: 322px; */
   margin-left: auto;
   margin-right: auto;
   backdrop-filter: blur(10px);
@@ -112,14 +115,10 @@ body {
 
 /* Можно добавить стили для специальных клавиш, например, Backspace, Enter */
 .special-key span {
-  background-color: #ccc;
+  position: relative;
+  background: rgba(34, 25, 78, 1);
 }
 
-#key_enter span {
-  background: #4664ff;
-  border-color: #4664ff;
-  position: relative;
-}
 #key_enter span:after {
   content: url('data:image/svg+xml,<svg width="18" height="13" viewBox="0 0 18 13" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M6.5501 12.5L0.850098 6.79998L2.2751 5.37498L6.5501 9.64998L15.7251 0.474976L17.1501 1.89998L6.5501 12.5Z" fill="white"/></svg>');
   position: absolute;
@@ -128,19 +127,36 @@ body {
   top: 50%;
   transform: translateY(-50%);
 }
-#key_backspace span {
-  background: #ffffff;
-  border-color: #fff;
+
+#key_backspace span:after {
+  content:url('data:image/svg+xml,<svg width="24" height="25" viewBox="0 0 24 25" fill="none" xmlns="http://www.w3.org/2000/svg"><mask id="mask0_32999_253156" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="0" y="0" width="24" height="25"><rect y="0.5" width="24" height="24" fill="%23090033"/></mask><g mask="url(%23mask0_32999_253156)"><path d="M11.4 16.5L14 13.9L16.6 16.5L18 15.1L15.4 12.5L18 9.9L16.6 8.5L14 11.1L11.4 8.5L10 9.9L12.6 12.5L10 15.1L11.4 16.5ZM9 20.5C8.68333 20.5 8.38333 20.4292 8.1 20.2875C7.81667 20.1458 7.58333 19.95 7.4 19.7L2 12.5L7.4 5.3C7.58333 5.05 7.81667 4.85417 8.1 4.7125C8.38333 4.57083 8.68333 4.5 9 4.5H20C20.55 4.5 21.0208 4.69583 21.4125 5.0875C21.8042 5.47917 22 5.95 22 6.5V18.5C22 19.05 21.8042 19.5208 21.4125 19.9125C21.0208 20.3042 20.55 20.5 20 20.5H9ZM4.5 12.5L9 18.5H20V6.5H9L4.5 12.5Z" fill="white"/></g></svg>');
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  transform: translateY(-40%);
+}
+
+  #key_enter span {
+  background: rgba(34, 25, 78, 1);
+  border-color: rgba(34, 25, 78, 1);
   position: relative;
 }
-#key_backspace span:after {
-  content: url('data:image/svg+xml,<svg width="20" height="17" viewBox="0 0 20 17" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M9.4 12.5L12 9.9L14.6 12.5L16 11.1L13.4 8.5L16 5.9L14.6 4.5L12 7.1L9.4 4.5L8 5.9L10.6 8.5L8 11.1L9.4 12.5ZM7 16.5C6.68333 16.5 6.38333 16.4292 6.1 16.2875C5.81667 16.1458 5.58333 15.95 5.4 15.7L0 8.5L5.4 1.3C5.58333 1.05 5.81667 0.854167 6.1 0.7125C6.38333 0.570833 6.68333 0.5 7 0.5H18C18.55 0.5 19.0208 0.695833 19.4125 1.0875C19.8042 1.47917 20 1.95 20 2.5V14.5C20 15.05 19.8042 15.5208 19.4125 15.9125C19.0208 16.3042 18.55 16.5 18 16.5H7ZM2.5 8.5L7 14.5H18V2.5H7L2.5 8.5Z" fill="black"/></svg>');
+#key_enter span:after {
+  content: url('data:image/svg+xml,<svg width="18" height="13" viewBox="0 0 18 13" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M6.54961 13L0.849609 7.29998L2.27461 5.87498L6.54961 10.15L15.7246 0.974976L17.1496 2.39998L6.54961 13Z" fill="white"/></svg>');
   position: absolute;
   left: 0;
   right: 0;
   top: 50%;
   transform: translateY(-50%);
 }
+#key_backspace span {
+  background: rgba(34, 25, 78, 1);
+  border-color: rgba(34, 25, 78, 1);
+  position: relative;
+}
+
+
 .activecell,
 .activecell .key {
   background: #453c74;
@@ -168,6 +184,9 @@ body {
   background: #4664ff;
   border-color: #4664ff;
   color: #fff;
+}
+.basefail {
+  color: rgba(255, 0, 40, 1);
 }
 
 .appmodal__header {
@@ -219,10 +238,18 @@ body {
   background: #4563ff;
 }
 
+#myModal_app .appmodal__button a {
+  width: 100%;
+}
+
 .btn_modalapp {
   position: absolute;
   right: 35px;
   top: 10px;
+}
+
+.btn_modalapp img {
+  width: 135px;
 }
 
 .appcontainer {
@@ -263,7 +290,123 @@ body {
 .appmodal__header [data-dismiss="modal"]:hover {
   opacity: 1;
 }
+.btn_modalapp_xs {
+  display: none;
+}
+.appmodal__message span {
+  display: block;
+  margin-bottom: 20px;
+}
+
+
+.appwords__cell.animate {
+  animation-duration: 0.3s;
+  animation-name: slideup;
+}
+.shake {
+  animation-duration: 0.3s;
+  animation-name: sliderow;
+}
+
+.appmodal_base {
+  padding: 40px 32px;
+  width: 334px;
+  max-width: 100%;
+  position: absolute;
+  left: 0;
+  right: 0;
+  margin: auto;
+  top: calc(100% + 6px);
+  z-index: 2;
+}
+.appmodal_base .appmodal__message {
+  font-size: 16px;line-height: 130%;
+  text-align: center;
+  margin-bottom: 0;
+}
+.appwords__row {
+  position: relative;
+}
+
+@keyframes slideup {
+  from {
+      margin-top: 0;
+  }
+
+  to {
+    margin-top: 0;
+  }
+
+  50% {
+   margin-top: -5px;
+  }
+  
+}
+@keyframes sliderow {
+  from {
+      margin-left: 0;
+  }
+
+  to {
+    margin-left: 0;
+  }
+
+  20% {
+   margin-left: -5px;
+  }
+  40% {
+   margin-left: 5px;
+  }  
+  60% {
+   margin-left: -5px;
+  }
+  80% {
+   margin-left: 5px;
+  }
+  
+}
+
+
+@media (min-width: 768px) {
+  .special-key span.started {
+  background-color: #ccc;
+}
+
+#key_enter span.started {
+  background: #4664ff;
+  border-color: #4664ff;
+
+}
+#key_backspace span.started {
+  background: #ffffff;
+  border-color: #fff;
+
+}
+#key_backspace span.started:after {
+  content: url('data:image/svg+xml,<svg width="20" height="17" viewBox="0 0 20 17" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M9.4 12.5L12 9.9L14.6 12.5L16 11.1L13.4 8.5L16 5.9L14.6 4.5L12 7.1L9.4 4.5L8 5.9L10.6 8.5L8 11.1L9.4 12.5ZM7 16.5C6.68333 16.5 6.38333 16.4292 6.1 16.2875C5.81667 16.1458 5.58333 15.95 5.4 15.7L0 8.5L5.4 1.3C5.58333 1.05 5.81667 0.854167 6.1 0.7125C6.38333 0.570833 6.68333 0.5 7 0.5H18C18.55 0.5 19.0208 0.695833 19.4125 1.0875C19.8042 1.47917 20 1.95 20 2.5V14.5C20 15.05 19.8042 15.5208 19.4125 15.9125C19.0208 16.3042 18.55 16.5 18 16.5H7ZM2.5 8.5L7 14.5H18V2.5H7L2.5 8.5Z" fill="black"/></svg>');
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+}
+}
 @media (max-width: 767px) {
+
+  .appmodal.appmodal_status.appmodal_true {
+        display: flex
+;
+    align-items: center;
+    justify-content: center;
+  }
+  .appmodal_status.appmodal_true .appmodal__button {
+    margin-bottom: 0;
+  }
+  .appmodal_false {
+    align-items: center;
+    flex-direction: row;
+  }
+  
   body {
     background-position: top right -73px;
   }
@@ -287,6 +430,9 @@ body {
     backdrop-filter: blur(10px);
     border: 1px solid #392f68;
     padding: 20px 12px;
+    border-radius: 20px;
+      width: 355px;
+  margin: auto;
   }
   .appwords__items,
   .keyboard {
@@ -297,7 +443,7 @@ body {
     display: none;
   }
   .appwrapper {
-    margin: 60px 0;
+    margin: 0px 0 60px 0;
   }
   .special-key span {
     background: #22194e !important;
@@ -360,8 +506,8 @@ body {
   }
   .appmodal__message {
     margin-bottom: 16px;
-    font-size: 20px;
-line-height: 110%;
+ font-size: 19px;
+line-height: 130%;
   }
   .appmodal__example,   .appmodal__text,   .appmodal__line {
     margin-bottom: 16px;
@@ -399,11 +545,12 @@ color: #f6f6f6;
     justify-content: space-between;
   }
   .appmodal_status .appmodal__header {
-    position: static;
+    position: absolute;
+    justify-content: flex-end;
   }
-  .appmodal_status .appmodal__header a {
+/*   .appmodal_status .appmodal__header a {
     display: none;
-  }
+  } */
   .appmodal_status .appmodal__message {
     text-align: center;
     padding-right: 0;
@@ -417,8 +564,20 @@ color: #f6f6f6;
     line-height: 52px;
     padding-top: 0;
     padding-bottom: 0;
+    padding-left: 24px;
+    padding-right: 24px;
+        letter-spacing: -0.03em;
   }
+  
   .appmodal__message br {
     display: block;
   }
+  .appmodal_base .appmodal__message {
+    padding-right: 0;
+  }
+  /*   #key_backspace span.started {
+  background: #ffffff !important;
+  border-color: #fff !important;
+
+} */
 }

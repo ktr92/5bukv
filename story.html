@@ -16,7 +16,6 @@
   <link href="template_3f0d9c725d90701c692931d4e95a818e_v1.css" type="text/css" data-template-style="true"
     rel="stylesheet" />
   <link href="word.css" type="text/css" rel="stylesheet" />
-  <script src="jquery-1.9.1.js"></script>
   <script src="vue.global.js"></script>
 
 
@@ -287,45 +286,7 @@
                 </div>
               </div>
             </div>
-            <script>
-              $('body').on('click', '.search__submit', function () {
-                $(this).closest('.search__full_header').addClass('active');
-              })
-              $('body').on('click', '.search.active .search__submit', function (e) {
-                e.preventDefault()
-                $(this).closest('form').submit()
-              })
-
-              function showComplete(e) {
-                if (e.value.length === 0) {
-                  $('.searchcomplete').addClass('active')
-
-                }
-                else {
-                  $('.searchcomplete').removeClass('active')
-
-                }
-              }
-
-              if ($("input,textarea").is(":focus")) {
-                //input and text area has focus
-              }
-              else {
-                //no focus for input and textarea
-              }
-              function showSuggestions(e) {
-                if (e.value.length > 0) {
-                  $('.searchcomplete').hide()
-                  $(e).closest('[data-togglewrapper]').find('[data-toggle="suggestions"]').addClass('active')
-                  $(e).closest('[data-togglewrapper]').addClass('sugg')
-                }
-                else {
-                  $('.searchcomplete').show()
-                  $(e).closest('[data-togglewrapper]').find('[data-toggle="suggestions"]').removeClass('active')
-                  $(e).closest('[data-togglewrapper]').removeClass('sugg')
-                }
-              }
-            </script>
+          
           </div>
         </div>
       </div>
@@ -1223,41 +1184,7 @@
     </div>
   </footer>
   <div class="s-overlay"></div>
-  <script>
-    $(document).ready(function () {
-
-      if ($('#canvas').length > 0) {
-        //Вызов анимации
-        const r = new rive.Rive({
-          src: '/local/templates/story/public/assets/digit.riv',
-          canvas: document.getElementById('canvas'),
-          animations: ['idle'],
-          autoplay: true,
-        });
-
-        // Переключение анимации по скроллу
-        var $element = $('#canvas');
-        let counter = 0;
-
-        $(window).scroll(function () {
-          var scroll = $(window).scrollTop() + $(window).height();
-          var offset = $element.offset().top + $element.height();
-
-          if (scroll > offset && counter == 0) {
-            r.play(['anim']);
-            counter = 1;
-          }
-
-          if (scroll < offset && counter == 1) {
-            r.play(['idle']);
-            counter = 0;
-          }
-        });
-      }
-
-    });
-  </script>
-
+ 
 
   <div id="myModal_sub" class="modal fade">
     <div class="modal-dialog">

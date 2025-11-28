@@ -977,7 +977,7 @@
              */
             onMounted(async () => {
 
-              const response = await fetch('/words.json')
+              const response = await fetch('https://ktr92.github.io/5bukv/words.json')
               if (!response.ok) throw new Error('Ошибка запроса')
               base.value = await response.json()
 
